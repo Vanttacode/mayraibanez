@@ -1,0 +1,37 @@
+/* 1. LA FUENTE DEBE SER LA LÍNEA 1 OBLIGATORIAMENTE */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Playball&display=swap');
+
+/* 2. LUEGO TAILWIND */
+@import "tailwindcss";
+
+/* 3. LUEGO TUS CONFIGURACIONES */
+@theme {
+  --color-brand-pink: #ec4899;
+  --color-brand-hot: #be185d;
+  --color-brand-light: #fff1f2;
+  
+  --font-sans: "Montserrat", sans-serif;
+  --font-script: "Playball", cursive;
+}
+
+/* 4. FINALMENTE TUS ANIMACIONES */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(1); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-heart-click {
+  animation: heartbeat 0.8s ease-in-out;
+}

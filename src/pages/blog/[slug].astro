@@ -1,0 +1,74 @@
+---
+export const prerender = false;
+
+import MobileAppLayout from "@/layouts/MobileAppLayout.astro";
+import { supabaseServer } from "@/lib/supabaseServer";
+import { SITE_BASE_URL, SITE_HANDLE } from "@/lib/site";
+import ShareBar from "@/components/blog/ShareBar";
+import { marked } from "marked";
+import sanitizeHtml from "sanitize-html";
+
+const { slug } = Astro.params;
+
+const { data: profile } = await supabaseServer
+  .from("profiles")
+  .select("*")
+  .eq("handle", SITE_HANDLE)
+  .single();
+
+if (!profile) throw new Error("Perfil no encontrado");
+
+const { data: post } = await supabaseServer
+  .from("posts")
+  .select("*")
+  .eq("user_id", profile.id)
+  .eq("slug", slug)
+  .single();
+
+if (!post || !post.published_at) {
+  return Astro.redirect("/blog");
+}
+
+marked.setOptions({ mangle: false, headerIds: false });
+const rawHtml = marked.parse(post.content_md || "");
+const safeHtml = sanitizeHtml(rawHtml, {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    img: ["src", "alt", "title"],
+  },
+});
+
+const canonical = `${SITE_BASE_URL}/blog/${post.slug}`;
+---
+
+<MobileAppLayout title={`${post.title} · ${profile.display_name}`} description={post.excerpt}>
+  <div class="space-y-3">
+    <header class="flex items-center justify-between">
+      <a href="/blog" class="text-sm text-white/70 hover:text-white">← Blog</a>
+      <a href="/" class="text-sm text-white/70 hover:text-white">Perfil</a>
+    </header>
+
+    <article class="rounded-3xl border border-white/10 bg-white/5 p-4">
+      {post.cover_url ? (
+        <img src={post.cover_url} class="h-44 w-full rounded-2xl object-cover border border-white/10" alt="" loading="eager" />
+      ) : null}
+
+      <h1 class="mt-3 text-xl font-bold leading-tight">{post.title}</h1>
+      <p class="text-sm text-white/60">{post.excerpt}</p>
+      <div class="text-xs text-white/45 mt-1">
+        {new Date(post.published_at).toLocaleDateString("es-CL")}
+      </div>
+
+      <div class="mt-3">
+        <ShareBar client:visible title={post.title} url={canonical} />
+      </div>
+
+      <hr class="my-4 border-white/10" />
+
+      <div class="prose prose-invert max-w-none prose-p:text-white/80 prose-a:text-white prose-strong:text-white">
+        <Fragment set:html={safeHtml} />
+      </div>
+    </article>
+  </div>
+</MobileAppLayout>

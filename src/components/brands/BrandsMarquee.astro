@@ -1,0 +1,56 @@
+---
+const { brands = [] } = Astro.props as {
+  brands: { name: string; logo_url: string | null }[];
+};
+
+// Filtramos los que tienen imagen
+const items = brands.filter(b => !!b.logo_url);
+---
+
+{items.length > 0 ? (
+  <section class="w-full py-4"> {/* Más padding vertical para que no se vea apretado */}
+    <div class="relative w-full overflow-hidden mask-gradient-soft">
+      <div class="flex items-center gap-12 md:gap-16 animate-marquee whitespace-nowrap px-4">
+        {/* Repetimos 6 veces para asegurar que nunca se corte el loop, incluso en pantallas anchas */}
+        {[...items, ...items, ...items, ...items, ...items, ...items].map((logo) => (
+          <div class="flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-110">
+            <img
+              src={logo.logo_url!}
+              alt={logo.name}
+              /* CAMBIOS ESTÉTICOS CLAVE:
+                 - h-12 md:h-16: Logos GRANDES (el doble que antes).
+                 - Quitamos grayscale y opacity: Ahora son full color vibrante.
+                 - drop-shadow-sm: Pequeña sombra para que "floten" sobre el fondo blanco.
+              */
+              class="h-12 md:h-16 w-auto max-w-[120px] object-contain drop-shadow-sm filter brightness-105 contrast-105"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+) : null}
+
+<style>
+  .animate-marquee {
+    /* Velocidad ajustada. 40s es suave y elegante para logos grandes */
+    animation: marquee 40s linear infinite;
+    width: max-content;
+    will-change: transform; /* Optimización para que no tironee */
+  }
+  /* Pausar la animación al pasar el mouse para poder ver bien un logo */
+  .animate-marquee:hover { animation-play-state: paused; }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    /* Al usar tantas repeticiones, movernos al -50% asegura un loop perfecto */
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Máscara suavizada en los bordes (fade in/out) */
+  .mask-gradient-soft {
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  }
+</style>

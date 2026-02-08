@@ -1,0 +1,8 @@
+---
+export const prerender = false;
+import MobileAppLayout from "@/layouts/MobileAppLayout.astro";
+import AdminApp from "@/components/admin/AdminApp";
+---
+<MobileAppLayout title="Admin" description="Panel">
+  <AdminApp client:only="react" />
+</MobileAppLayout>
