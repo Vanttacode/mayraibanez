@@ -1,14 +1,70 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import type { Profile } from "@/lib/types";
-import { Mail, ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { createClient } from "@supabase/supabase-js";
+
+// Inicialización de Supabase manejando compatibilidad de variables de entorno (Astro/Next)
+const supabaseUrl = 
+  (typeof process !== "undefined" && process.env.PUBLIC_SUPABASE_URL) || 
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.PUBLIC_SUPABASE_URL) || 
+  "";
+
+const supabaseKey = 
+  (typeof process !== "undefined" && process.env.PUBLIC_SUPABASE_ANON_KEY) || 
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.PUBLIC_SUPABASE_ANON_KEY) || 
+  "";
+
+const defaultSiteHandle = 
+  (typeof process !== "undefined" && process.env.PUBLIC_SITE_HANDLE) || 
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.PUBLIC_SITE_HANDLE) || 
+  "mayraibanez";
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function HireCard({ profile }: { profile: Profile }) {
-  // Aseguramos que use el correo correcto, incluso si viene vacío del perfil
-  const email = profile.email || "mayraibanezcontacto@gmail.com";
-  
-  const mailto = `mailto:${email}?subject=${encodeURIComponent("Propuesta Comercial / Contratación")}&body=${encodeURIComponent(
-    `Hola Mayra,\n\nMe gustaría contactarte para:\n\n- Tipo de servicio (Publicidad/Evento/Colab):\n- Marca/Empresa:\n- Fecha tentativa:\n- Presupuesto estimado:\n\nQuedo atento/a a tu respuesta.\nSaludos.`
-  )}`;
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [formData, setFormData] = useState({
+    name: "",
+    senderEmail: "",
+    serviceType: "Publicidad",
+    company: "",
+    message: ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+
+    try {
+      const { error } = await supabase
+        .from("contact_messages")
+        .insert([
+          {
+            name: formData.name,
+            sender_email: formData.senderEmail,
+            service_type: formData.serviceType,
+            company: formData.company,
+            message: formData.message,
+            site_handle: defaultSiteHandle
+          }
+        ]);
+
+      if (error) {
+        throw error;
+      }
+
+      setStatus("success");
+    } catch (error) {
+      console.error("Error al enviar el mensaje:", error);
+      setStatus("error");
+    }
+  };
 
   return (
     <section className="relative overflow-hidden rounded-[2rem] bg-white p-8 shadow-xl shadow-rose-100/40 border border-rose-50 text-center group transition-all hover:border-rose-200">
@@ -20,35 +76,87 @@ export default function HireCard({ profile }: { profile: Profile }) {
       <div className="relative z-10 flex flex-col items-center">
         
         {/* Icono Principal */}
-        <div className="mb-4 bg-rose-50 rounded-full p-3 text-rose-500 shadow-sm group-hover:scale-110 transition-transform duration-500">
-             <Sparkles size={24} />
+        <div className="mb-4 bg-rose-50 rounded-full p-3 text-rose-500 shadow-sm transition-transform duration-500">
+             {status === "success" ? <CheckCircle2 size={24} /> : <Sparkles size={24} />}
         </div>
 
         <h3 className="text-xl font-bold text-neutral-800 tracking-tight font-sans mb-2">
-            Trabajemos Juntos
+            {status === "success" ? "Mensaje Enviado" : "Trabajemos Juntos"}
         </h3>
 
-        {/* Servicios Clave (Pills) */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-            <span className="px-3 py-1 rounded-full bg-neutral-50 text-neutral-500 text-[10px] font-bold uppercase tracking-wider border border-neutral-100">Publicidad</span>
-            <span className="px-3 py-1 rounded-full bg-neutral-50 text-neutral-500 text-[10px] font-bold uppercase tracking-wider border border-neutral-100">Eventos</span>
-            <span className="px-3 py-1 rounded-full bg-neutral-50 text-neutral-500 text-[10px] font-bold uppercase tracking-wider border border-neutral-100">Colaboraciones</span>
-        </div>
-        
-        <p className="text-sm text-neutral-500 leading-relaxed font-medium mb-6 max-w-[280px]">
-          ¿Tienes una marca o evento? Escríbeme y creemos algo increíble juntos.
-        </p>
-
-       
-
-        {/* Email visible por si quieren copiarlo */}
-        <div className="mt-3 pt-3 border-t border-neutral-300 w-full">
-            <p className="text-xs text-neutral-400 font-medium select-all cursor-text hover:text-rose-500 transition-colors">
-                {email}
+        {status === "success" ? (
+          <div className="mt-4 text-neutral-500 text-sm animate-fade-in">
+            <p>Gracias por tu interes.</p>
+            <p>Me pondre en contacto contigo pronto.</p>
+            <button 
+              onClick={() => { setStatus("idle"); setFormData({ name: "", senderEmail: "", serviceType: "Publicidad", company: "", message: "" }); }}
+              className="mt-6 text-rose-500 font-medium text-xs underline hover:text-rose-600"
+            >
+              Enviar otro mensaje
+            </button>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-neutral-500 leading-relaxed font-medium mb-6 max-w-[280px]">
+              ¿Tienes una marca o evento? Escribeme y creemos algo increible juntos.
             </p>
-        </div>
 
-        {/* Admin Link (Oculto visualmente, solo hover en la esquina) */}
+            {/* Formulario */}
+            <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3 text-left">
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="name" className="sr-only">Nombre</label>
+                  <input required type="text" id="name" name="name" placeholder="Tu Nombre" value={formData.name} onChange={handleChange} 
+                    className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300 transition-all bg-neutral-50/50" />
+                </div>
+                <div>
+                  <label htmlFor="company" className="sr-only">Marca/Empresa</label>
+                  <input required type="text" id="company" name="company" placeholder="Marca/Empresa" value={formData.company} onChange={handleChange} 
+                    className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300 transition-all bg-neutral-50/50" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="senderEmail" className="sr-only">Tu Email</label>
+                  <input required type="email" id="senderEmail" name="senderEmail" placeholder="Tu Email" value={formData.senderEmail} onChange={handleChange} 
+                    className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300 transition-all bg-neutral-50/50" />
+                </div>
+                <div>
+                  <label htmlFor="serviceType" className="sr-only">Servicio</label>
+                  <select id="serviceType" name="serviceType" value={formData.serviceType} onChange={handleChange} 
+                    className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300 transition-all bg-neutral-50/50 text-neutral-600">
+                    <option value="Publicidad">Publicidad</option>
+                    <option value="Evento">Evento</option>
+                    <option value="Colaboracion">Colaboracion</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="message" className="sr-only">Detalles</label>
+                <textarea required id="message" name="message" rows={3} placeholder="Presupuesto estimado, fechas, detalles..." value={formData.message} onChange={handleChange} 
+                  className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300 transition-all bg-neutral-50/50 resize-none"></textarea>
+              </div>
+
+              {status === "error" && (
+                <p className="text-red-500 text-xs text-center">Hubo un error al enviar el mensaje. Intenta de nuevo.</p>
+              )}
+
+              <button 
+                type="submit" 
+                disabled={status === "loading"}
+                className="w-full mt-2 flex items-center justify-center gap-2 bg-neutral-900 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-rose-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {status === "loading" ? <Loader2 size={16} className="animate-spin" /> : <><Send size={16} /> Enviar Propuesta</>}
+              </button>
+
+            </form>
+          </>
+        )}
+
+        {/* Admin Link Oculto */}
         <a href="/admin" className="absolute top-4 right-4 text-neutral-200 hover:text-rose-300 transition-colors p-2">
             <span className="sr-only">Admin</span>
             <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
