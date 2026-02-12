@@ -37,7 +37,7 @@ const profile = {
 const AVATAR_URL = "/fotoperfil.jpg"; 
 const LOGO_URL = "/logo.png"; // EL PNG BLANCO (Lo pintaremos rosa con CSS abajo)
 
-// Tus 3 fotos de portada (asegúrate que las extensiones coincidan con tus archivos)
+// Tus 3 fotos de portada
 const HERO_IMAGES = [
     "/portada/1.jpg", 
     "/portada/2.jpg", 
@@ -57,7 +57,7 @@ const manualSocials = [
 /* --- 5. MARCAS LOCALES --- */
 const localBrands = Array.from({ length: 9 }, (_, i) => ({
     name: `Brand ${i+1}`,
-    logo_url: `/logos/${i + 1}.webp`, // Revisa si son .webp o .png en tu carpeta
+    logo_url: `/logos/${i + 1}.webp`, 
     enabled: true
 }));
 ---
@@ -87,12 +87,18 @@ const localBrands = Array.from({ length: 9 }, (_, i) => ({
            </div>
         </div>
 
-        <div class="mb-3 w-full flex justify-center">
+        <div class="mb-3 w-full flex justify-center items-center gap-1">
             <img 
               src={LOGO_URL} 
               alt={profile.display_name} 
               class="h-16 md:h-20 w-auto object-contain drop-shadow-sm logo-pink" 
             />
+            {/* ICONO VERIFICADO LOGO */}
+            <div class="bg-blue-500 text-white rounded-full p-0.5 border border-white shadow-sm mt-1" title="Verificado">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 fill-current" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </div>
         </div>
         
         <div class="mb-5">
@@ -116,8 +122,16 @@ const localBrands = Array.from({ length: 9 }, (_, i) => ({
             class="relative group w-full flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-gradient-to-r from-[#E1306C] to-[#C13584] text-white font-bold text-sm tracking-wide shadow-xl shadow-pink-500/30 overflow-hidden transition-transform hover:scale-[1.02]"
         >
             <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-full"></div>
+            
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.51"/></svg>
-            <span>Instagram Familia</span>
+            
+            <div class="flex items-center gap-1">
+                <span>Instagram Oficial</span>
+                {/* ICONO VERIFICADO EN EL BOTÓN (Blanco para contrastar) */}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current text-white/90" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+            </div>
         </a>
       </div>
     </div>
@@ -157,9 +171,7 @@ const localBrands = Array.from({ length: 9 }, (_, i) => ({
     animation: float-in 0.8s ease-out forwards;
   }
 
-  /* FILTRO MÁGICO: Convierte PNG blanco a Rosa Fucsia (#ec4899)
-     Funciona invirtiendo colores y rotando el tono.
-  */
+  /* FILTRO MÁGICO */
   .logo-pink {
     filter: brightness(0) saturate(100%) invert(38%) sepia(63%) saturate(3047%) hue-rotate(302deg) brightness(97%) contrast(96%);
   }
