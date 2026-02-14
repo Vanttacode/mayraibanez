@@ -4,6 +4,7 @@ export const prerender = false;
 import MobileAppLayout from "@/layouts/MobileAppLayout.astro";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { SITE_HANDLE } from "@/lib/site";
+
 import StickyHeader from "@/components/home/StickyHeader";
 import CoverSlider from "@/components/home/CoverSlider";
 import ProfileAvatar from "@/components/home/ProfileAvatar";
@@ -12,167 +13,160 @@ import SocialGrid from "@/components/home/SocialGrid";
 import HireCard from "@/components/home/HireCard";
 import HeartCounter from "@/components/home/HeartCounter";
 
-/* --- 1. DATOS BASE (SUPABASE) --- */
+import BlogCarousel from "@/components/blog/BlogCarousel";
+
+/* --- 1) DATOS BASE (SUPABASE) --- */
 const { data: dbProfile } = await supabaseServer
   .from("profiles")
   .select("*")
   .eq("handle", SITE_HANDLE)
   .single();
 
-/* --- 2. SOBRESCRITURA DE DATOS (Manual manda sobre DB) --- */
+if (!dbProfile) throw new Error("Perfil no encontrado");
+
+/* --- 2) OVERRIDE MANUAL --- */
 const profile = {
-    ...(dbProfile || {}), // Mantiene lo técnico
-    
-    // TEXTO EN PRIMERA PERSONA
-    display_name: "Mayra Ibáñez",
-    bio: "Mayra Ibáñez es Periodista y licenciada en Relaciones Públicas, con una sólida trayectoria como conductora en medios de comunicación en Chile y Argentina, su país natal. Se ha consolidado como una de las voces femeninas más reconocidas del sur de Chile. Su estilo combina credibilidad, calidez y carácter, generando conversaciones que conectan genuinamente con la audiencia. Desde hace cuatro años conduce y produce programas en radio y televisión regional, liderando espacios de información, análisis y actualidad. Paralelamente, es creadora de contenido digital y rostro de diversas marcas, integrando información, opinión y tendencias en sus plataformas sociales, donde mantiene una comunidad activa y comprometida.",
-    
-    // ENLACES
-    community_href: "https://www.instagram.com/Mayra.ibanez",
-    community_label: "Unirme",
-    email: "mayraibanezcontacto@gmail.com"
+  ...(dbProfile || {}),
+  display_name: "Mayra Ibáñez",
+  bio:
+    "Mayra Ibáñez es Periodista y licenciada en Relaciones Públicas, con una sólida trayectoria como conductora en medios de comunicación en Chile y Argentina, su país natal. Se ha consolidado como una de las voces femeninas más reconocidas del sur de Chile. Su estilo combina credibilidad, calidez y carácter, generando conversaciones que conectan genuinamente con la audiencia. Desde hace cuatro años conduce y produce programas en radio y televisión regional, liderando espacios de información, análisis y actualidad. Paralelamente, es creadora de contenido digital y rostro de diversas marcas, integrando información, opinión y tendencias en sus plataformas sociales, donde mantiene una comunidad activa y comprometida.",
+  community_href: "https://www.instagram.com/Mayra.ibanez",
+  community_label: "Unirme",
+  email: "mayraibanezcontacto@gmail.com",
 };
 
-/* --- 3. RUTAS DE IMÁGENES LOCALES --- */
-const AVATAR_URL = "/fotoperfil.jpg"; 
-const LOGO_URL = "/logo.png"; // EL PNG BLANCO (Lo pintaremos rosa con CSS abajo)
+/* --- 3) POSTS PUBLICADOS PARA CARRUSEL --- */
+const { data: posts } = await supabaseServer
+  .from("posts")
+  .select("id, title, slug, excerpt, cover_url, published_at, created_at")
+  .eq("user_id", dbProfile.id)
+  .not("published_at", "is", null)
+  .order("published_at", { ascending: false })
+  .limit(8);
 
-// Tus 3 fotos de portada
-const HERO_IMAGES = [
-    "/portada/1.jpg", 
-    "/portada/2.jpg", 
-    "/portada/3.jpg"
-];
+const latestPosts = posts ?? [];
 
-/* --- 4. REDES SOCIALES MANUALES --- */
+/* --- 4) IMÁGENES LOCALES --- */
+const AVATAR_URL = "/fotoperfil.jpg";
+const LOGO_URL = "/logo.png";
+const HERO_IMAGES = ["/portada/1.jpg", "/portada/2.jpg", "/portada/3.jpg"];
+
+/* --- 5) REDES --- */
 const manualSocials = [
-    { id: "ig", platform: "instagram", label: "Instagram", href: "https://www.instagram.com/Mayra.ibanez", enabled: true },
-    { id: "tk", platform: "tiktok", label: "TikTok", href: "https://www.tiktok.com/@mayra.ibanez?_t=ZM-8xG6NQBMgvF&_r=1", enabled: true },
-    { id: "tw", platform: "x", label: "Twitter / X", href: "https://x.com/Mayraibanezz?t=Q0wpikNgaCcgmwZUoDiVjQ&s=08", enabled: true },
-    { id: "fb", platform: "facebook", label: "Facebook", href: "https://www.facebook.com/mayraibanezoficial?rdid=jQWMZVgzarLEwe44", enabled: true },
-    { id: "th", platform: "threads", label: "Threads", href: "https://www.threads.com/@mayra.ibanez?xmt=AQF0kjODn_66hq2vDuD_lnIJniKptl8fQu4Uuqc7mAiDJmM", enabled: true },
-    { id: "mail", platform: "mail", label: "Contacto", href: `mailto:${profile.email}`, enabled: true },
+  { id: "ig", platform: "instagram", label: "Instagram", href: "https://www.instagram.com/Mayra.ibanez", enabled: true },
+  { id: "tk", platform: "tiktok", label: "TikTok", href: "https://www.tiktok.com/@mayra.ibanez?_t=ZM-8xG6NQBMgvF&_r=1", enabled: true },
+  { id: "tw", platform: "x", label: "Twitter / X", href: "https://x.com/Mayraibanezz?t=Q0wpikNgaCcgmwZUoDiVjQ&s=08", enabled: true },
+  { id: "fb", platform: "facebook", label: "Facebook", href: "https://www.facebook.com/mayraibanezoficial?rdid=jQWMZVgzarLEwe44", enabled: true },
+  { id: "th", platform: "threads", label: "Threads", href: "https://www.threads.com/@mayra.ibanez?xmt=AQF0kjODn_66hq2vDuD_lnIJniKptl8fQu4Uuqc7mAiDJmM", enabled: true },
+  { id: "mail", platform: "mail", label: "Contacto", href: `mailto:${profile.email}`, enabled: true },
 ];
 
-/* --- 5. MARCAS LOCALES --- */
+/* --- 6) MARCAS LOCALES --- */
 const localBrands = Array.from({ length: 9 }, (_, i) => ({
-    name: `Brand ${i+1}`,
-    logo_url: `/logos/${i + 1}.webp`, 
-    enabled: true
+  name: `Brand ${i + 1}`,
+  logo_url: `/logos/${i + 1}.webp`,
+  enabled: true,
 }));
 ---
 
-<MobileAppLayout title={profile.display_name} description={profile.bio}>
-  
+<MobileAppLayout
+  title={profile.display_name}
+  description={profile.bio}
+  footerCta={{ label: "¿QUERÉS TU LINK BIO PRO?", href: "https://vanttacode.cl/linkbio" }}
+  footerAdminHref="/ingreso-admin"
+  footerAdminLabel="Ingreso Admin"
+  copyrightName="Mayra Ibáñez"
+>
   <StickyHeader client:load logoUrl={LOGO_URL} communityHref={profile.community_href} />
 
   <div class="absolute top-0 left-0 w-full z-0 h-[450px] md:h-[500px]">
-      <CoverSlider client:load images={HERO_IMAGES} />
-      <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-white z-10"></div>
+    <CoverSlider client:load images={HERO_IMAGES} />
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-white z-10"></div>
   </div>
 
   <div class="relative z-10 flex flex-col items-center pt-[320px] md:pt-[360px] px-4">
-    
     <div class="w-full bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white p-6 pb-8 flex flex-col items-center text-center relative mb-8 animate-float-in">
-        
-        <div class="-mt-24 mb-4 relative z-20 group">
-           <div class="absolute -inset-4 bg-pink-500/30 blur-xl rounded-full animate-pulse group-hover:bg-pink-500/50 transition-all"></div>
-           
-           <div class="w-36 h-36 md:w-44 md:h-44">
-              <ProfileAvatar client:load src={AVATAR_URL} alt={profile.display_name} />
-           </div>
+      <div class="-mt-24 mb-4 relative z-20 group">
+        <div class="absolute -inset-4 bg-pink-500/30 blur-xl rounded-full animate-pulse group-hover:bg-pink-500/50 transition-all"></div>
 
-           <div class="absolute bottom-2 right-2 bg-blue-500 text-white rounded-full p-1.5 border-[3px] border-white z-30 shadow-sm" title="Cuenta Verificada">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-           </div>
+        <div class="w-36 h-36 md:w-44 md:h-44">
+          <ProfileAvatar client:load src={AVATAR_URL} alt={profile.display_name} />
         </div>
 
-        <div class="mb-3 w-full flex justify-center items-center gap-1">
-            <img 
-              src={LOGO_URL} 
-              alt={profile.display_name} 
-              class="h-16 md:h-20 w-auto object-contain drop-shadow-sm logo-pink" 
-            />
-            {/* ICONO VERIFICADO LOGO */}
-            <div class="bg-blue-500 text-white rounded-full p-0.5 border border-white shadow-sm mt-1" title="Verificado">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 fill-current" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-            </div>
+        <div class="absolute bottom-2 right-2 bg-blue-500 text-white rounded-full p-1.5 border-[3px] border-white z-30 shadow-sm" title="Cuenta Verificada">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
         </div>
-        
-        <div class="mb-5">
-            <HeartCounter client:visible />
+      </div>
+
+      <div class="mb-3 w-full flex justify-center items-center gap-1">
+        <img src={LOGO_URL} alt={profile.display_name} class="h-16 md:h-20 w-auto object-contain drop-shadow-sm logo-pink" />
+        <div class="bg-blue-500 text-white rounded-full p-0.5 border border-white shadow-sm mt-1" title="Verificado">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 fill-current" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
         </div>
+      </div>
 
-        <div class="w-full h-px bg-gradient-to-r from-transparent via-rose-200 to-transparent mb-4"></div>
-        <h2 class="font-script text-2xl text-rose-500 mb-2">Un poco sobre mí</h2>
-        <p class="text-sm text-neutral-600 font-medium leading-relaxed font-sans px-2 text-balance">
-            {profile.bio}
-        </p>
+      <div class="mb-5">
+        <HeartCounter client:visible />
+      </div>
 
+      <div class="w-full h-px bg-gradient-to-r from-transparent via-rose-200 to-transparent mb-4"></div>
+      <h2 class="font-script text-2xl text-rose-500 mb-2">Un poco sobre mí</h2>
+      <p class="text-sm text-neutral-600 font-medium leading-relaxed font-sans px-2 text-balance">{profile.bio}</p>
     </div>
 
     <div class="flex flex-col w-full max-w-sm gap-4 mb-12">
       <div class="text-center w-full">
         <h3 class="font-script text-2xl text-rose-400 mb-3">Únete a mi Comunidad</h3>
         <a
-            href={profile.community_href}
-            target="_blank"
-            class="relative group w-full flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-gradient-to-r from-[#E1306C] to-[#C13584] text-white font-bold text-sm tracking-wide shadow-xl shadow-pink-500/30 overflow-hidden transition-transform hover:scale-[1.02]"
+          href={profile.community_href}
+          target="_blank"
+          class="relative group w-full flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-gradient-to-r from-[#E1306C] to-[#C13584] text-white font-bold text-sm tracking-wide shadow-xl shadow-pink-500/30 overflow-hidden transition-transform hover:scale-[1.02]"
         >
-            <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-full"></div>
-            
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.51"/></svg>
-            
-            <div class="flex items-center gap-1">
-                <span>Instagram Oficial</span>
-                {/* ICONO VERIFICADO EN EL BOTÓN (Blanco para contrastar) */}
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current text-white/90" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-            </div>
+          <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-full"></div>
+          <span>Instagram Oficial</span>
         </a>
       </div>
     </div>
 
     <section class="w-full max-w-2xl mb-12">
-        <div class="flex items-center gap-3 mb-4 justify-center">
-            <div class="h-px w-10 bg-gradient-to-r from-transparent to-rose-300"></div>
-            <h2 class="font-script text-3xl text-rose-500">Mis Redes</h2>
-            <div class="h-px w-10 bg-gradient-to-l from-transparent to-rose-300"></div>
-        </div>
-        <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-rose-100/50 border border-rose-50">
-            <SocialGrid client:visible socials={manualSocials} />
-        </div>
+      <div class="flex items-center gap-3 mb-4 justify-center">
+        <div class="h-px w-10 bg-gradient-to-r from-transparent to-rose-300"></div>
+        <h2 class="font-script text-3xl text-rose-500">Mis Redes</h2>
+        <div class="h-px w-10 bg-gradient-to-l from-transparent to-rose-300"></div>
+      </div>
+      <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-rose-100/50 border border-rose-50">
+        <SocialGrid client:visible socials={manualSocials} />
+      </div>
     </section>
 
     <section class="w-full max-w-3xl mb-12">
-        <h2 class="font-script text-2xl text-neutral-400 mb-4 text-center">Ellos confiaron en mi trabajo</h2>
-        <div class="bg-white rounded-2xl py-4 shadow-sm border border-rose-50">
-            <BrandsMarquee brands={localBrands} />
-        </div>
+      <h2 class="font-script text-2xl text-neutral-400 mb-4 text-center">Ellos confiaron en mi trabajo</h2>
+      <div class="bg-white rounded-2xl py-4 shadow-sm border border-rose-50">
+        <BrandsMarquee brands={localBrands} />
+      </div>
     </section>
 
     <section class="w-full max-w-md mb-8">
-        <HireCard client:visible profile={profile} />
+      <BlogCarousel client:visible posts={latestPosts} />
     </section>
 
+    <section class="w-full max-w-md mb-8">
+      <HireCard client:visible profile={profile} />
+    </section>
   </div>
+
+  <style>
+    @keyframes float-in {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-float-in { animation: float-in 0.8s ease-out forwards; }
+    .logo-pink {
+      filter: brightness(0) saturate(100%) invert(38%) sepia(63%) saturate(3047%) hue-rotate(302deg) brightness(97%) contrast(96%);
+    }
+  </style>
 </MobileAppLayout>
-
-<style>
-  /* Animación de entrada */
-  @keyframes float-in {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-float-in {
-    animation: float-in 0.8s ease-out forwards;
-  }
-
-  /* FILTRO MÁGICO */
-  .logo-pink {
-    filter: brightness(0) saturate(100%) invert(38%) sepia(63%) saturate(3047%) hue-rotate(302deg) brightness(97%) contrast(96%);
-  }
-</style>

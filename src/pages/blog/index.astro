@@ -5,18 +5,27 @@ import MobileAppLayout from "@/layouts/MobileAppLayout.astro";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { SITE_HANDLE } from "@/lib/site";
 
-const { data: profile } = await supabaseServer
+/* Perfil */
+const { data: dbProfile } = await supabaseServer
   .from("profiles")
   .select("*")
   .eq("handle", SITE_HANDLE)
   .single();
 
-if (!profile) throw new Error("Perfil no encontrado");
+if (!dbProfile) throw new Error("Perfil no encontrado");
 
+/* Override (consistencia con el index) */
+const profile = {
+  ...(dbProfile || {}),
+  display_name: "Mayra Ibáñez",
+  email: "mayraibanezcontacto@gmail.com",
+};
+
+/* Posts publicados */
 const { data: posts } = await supabaseServer
   .from("posts")
   .select("id, user_id, title, slug, excerpt, cover_url, published_at, created_at")
-  .eq("user_id", profile.id)
+  .eq("user_id", dbProfile.id)
   .not("published_at", "is", null)
   .order("published_at", { ascending: false });
 
@@ -27,7 +36,7 @@ const list = posts ?? [];
   <div class="space-y-3">
     <header class="flex items-center justify-between">
       <a href="/" class="text-sm text-white/70 hover:text-white">← Volver</a>
-      <a href="/admin" class="text-sm text-white/70 hover:text-white">Admin</a>
+      <a href="/" class="text-sm text-white/70 hover:text-white">Perfil</a>
     </header>
 
     <section class="rounded-3xl border border-white/10 bg-white/5 p-4">
@@ -48,10 +57,17 @@ const list = posts ?? [];
           >
             <div class="flex gap-3">
               {p.cover_url ? (
-                <img src={p.cover_url} class="h-16 w-16 rounded-2xl object-cover border border-white/10" alt="" loading="lazy" />
+                <img
+                  src={p.cover_url}
+                  class="h-16 w-16 rounded-2xl object-cover border border-white/10"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
               ) : (
                 <div class="h-16 w-16 rounded-2xl bg-white/5 border border-white/10" />
               )}
+
               <div class="min-w-0">
                 <div class="font-semibold truncate">{p.title}</div>
                 <div class="text-sm text-white/60 line-clamp-2">{p.excerpt}</div>
@@ -64,5 +80,30 @@ const list = posts ?? [];
         ))
       )}
     </section>
+
+    {/* Footer */}
+    <footer class="pt-4">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 text-center">
+        <div class="text-xs text-white/50">
+          Diseñado por{" "}
+          <a class="font-bold text-white/80 hover:text-white transition" href="https://vanttacode.cl" target="_blank" rel="noreferrer">
+            VanttaCode
+          </a>
+        </div>
+
+        <a
+          href="https://vanttacode.cl/linkbio"
+          target="_blank"
+          rel="noreferrer"
+          class="mt-3 inline-flex items-center justify-center w-full px-4 py-3 rounded-2xl bg-white text-black font-extrabold text-sm hover:opacity-90 transition"
+        >
+          ¿QUERÉS TU LINK BIO PRO?
+        </a>
+
+        <a href="/ingreso-admin" class="mt-3 block text-[11px] text-white/50 underline hover:text-white/80">
+          Ingreso Admin
+        </a>
+      </div>
+    </footer>
   </div>
 </MobileAppLayout>

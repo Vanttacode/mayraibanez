@@ -10,18 +10,26 @@ import sanitizeHtml from "sanitize-html";
 
 const { slug } = Astro.params;
 
-const { data: profile } = await supabaseServer
+/* Perfil */
+const { data: dbProfile } = await supabaseServer
   .from("profiles")
   .select("*")
   .eq("handle", SITE_HANDLE)
   .single();
 
-if (!profile) throw new Error("Perfil no encontrado");
+if (!dbProfile) throw new Error("Perfil no encontrado");
 
+/* Override (consistencia) */
+const profile = {
+  ...(dbProfile || {}),
+  display_name: "Mayra Ibáñez",
+};
+
+/* Post */
 const { data: post } = await supabaseServer
   .from("posts")
   .select("*")
-  .eq("user_id", profile.id)
+  .eq("user_id", dbProfile.id)
   .eq("slug", slug)
   .single();
 
@@ -29,17 +37,24 @@ if (!post || !post.published_at) {
   return Astro.redirect("/blog");
 }
 
+/* Markdown → HTML (sanitizado) */
 marked.setOptions({ mangle: false, headerIds: false });
 const rawHtml = marked.parse(post.content_md || "");
+
 const safeHtml = sanitizeHtml(rawHtml, {
-  allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "video", "source"]),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    img: ["src", "alt", "title"],
+    img: ["src", "alt", "title", "loading", "decoding"],
+    video: ["controls", "playsinline", "preload", "poster"],
+    source: ["src", "type"],
   },
 });
 
 const canonical = `${SITE_BASE_URL}/blog/${post.slug}`;
+
+/* Media (si existe columna jsonb `media`) */
+const media = Array.isArray((post as any).media) ? (post as any).media : [];
 ---
 
 <MobileAppLayout title={`${post.title} · ${profile.display_name}`} description={post.excerpt}>
@@ -51,7 +66,13 @@ const canonical = `${SITE_BASE_URL}/blog/${post.slug}`;
 
     <article class="rounded-3xl border border-white/10 bg-white/5 p-4">
       {post.cover_url ? (
-        <img src={post.cover_url} class="h-44 w-full rounded-2xl object-cover border border-white/10" alt="" loading="eager" />
+        <img
+          src={post.cover_url}
+          class="h-44 w-full rounded-2xl object-cover border border-white/10"
+          alt=""
+          loading="eager"
+          decoding="async"
+        />
       ) : null}
 
       <h1 class="mt-3 text-xl font-bold leading-tight">{post.title}</h1>
@@ -64,11 +85,69 @@ const canonical = `${SITE_BASE_URL}/blog/${post.slug}`;
         <ShareBar client:visible title={post.title} url={canonical} />
       </div>
 
+      {/* Galería de media (fotos/videos) */}
+      {media.length ? (
+        <div class="mt-4">
+          <div class="text-xs text-white/50 mb-2">Media</div>
+          <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2">
+            {media.map((m) => (
+              <div class="min-w-[240px] max-w-[240px] snap-start rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                {m.type === "video" ? (
+                  <video
+                    controls
+                    playsinline
+                    preload="metadata"
+                    poster={m.poster_url ?? undefined}
+                    class="w-full h-44 object-cover"
+                  >
+                    <source src={m.url} type={m.mime ?? "video/mp4"} />
+                  </video>
+                ) : (
+                  <img
+                    src={m.url}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-44 object-cover"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       <hr class="my-4 border-white/10" />
 
       <div class="prose prose-invert max-w-none prose-p:text-white/80 prose-a:text-white prose-strong:text-white">
         <Fragment set:html={safeHtml} />
       </div>
     </article>
+
+    {/* Footer */}
+    <footer class="pt-4">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-4 text-center">
+        <div class="text-xs text-white/50">
+          Diseñado por{" "}
+          <a class="font-bold text-white/80 hover:text-white transition" href="https://vanttacode.cl" target="_blank" rel="noreferrer">
+            VanttaCode
+          </a>
+        </div>
+
+        <a
+          href="https://vanttacode.cl/linkbio"
+          target="_blank"
+          rel="noreferrer"
+          class="mt-3 inline-flex items-center justify-center w-full px-4 py-3 rounded-2xl bg-white text-black font-extrabold text-sm hover:opacity-90 transition"
+        >
+          ¿QUERÉS TU LINK BIO PRO?
+        </a>
+
+        <a href="/ingreso-admin" class="mt-3 block text-[11px] text-white/50 underline hover:text-white/80">
+          Ingreso Admin
+        </a>
+      </div>
+    </footer>
   </div>
 </MobileAppLayout>
+

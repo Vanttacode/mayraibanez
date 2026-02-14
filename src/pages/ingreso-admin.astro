@@ -2,18 +2,18 @@
 export const prerender = false;
 
 import MobileAppLayout from "@/layouts/MobileAppLayout.astro";
-import AdminApp from "@/components/admin/AdminApp";
+import AdminLogin from "@/components/admin/AdminLogin";
 ---
 
 <MobileAppLayout
-  title="Admin"
-  description="Panel"
+  title="Ingreso Admin"
+  description="Acceso al panel"
   footerCta={{ label: "¿QUERÉS TU LINK BIO PRO? INGRESÁ ACÁ.", href: "https://vanttacode.cl/linkbio" }}
   footerAdminHref="/ingreso-admin"
   footerAdminLabel="Ingreso Admin"
   copyrightName="Mayra Ibáñez"
 >
-  <div class="flex-1 flex items-start justify-center pt-10 px-4">
-    <AdminApp client:only="react" />
+  <div class="flex-1 flex items-start justify-center pt-24 px-4">
+    <AdminLogin client:only="react" />
   </div>
 </MobileAppLayout>
