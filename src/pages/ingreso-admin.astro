@@ -6,14 +6,48 @@ import AdminLogin from "@/components/admin/AdminLogin";
 ---
 
 <MobileAppLayout
-  title="Ingreso Admin"
-  description="Acceso al panel"
-  footerCta={{ label: "¿QUERÉS TU LINK BIO PRO? INGRESÁ ACÁ.", href: "https://vanttacode.cl/linkbio" }}
-  footerAdminHref="/ingreso-admin"
-  footerAdminLabel="Ingreso Admin"
-  copyrightName="Mayra Ibáñez"
+  title="Acceso Admin · Mayra Ibáñez"
+  description="Ingreso al panel de administración"
+  footerAdminHref="/" 
+  footerLinkBioHref="https://vanttacode.cl/linkbio"
 >
-  <div class="flex-1 flex items-start justify-center pt-24 px-4">
-    <AdminLogin client:only="react" />
+  {/* footerAdminHref="/" -> En esta pantalla, el botón "Admin" del footer te devuelve al Home */}
+
+  <div class="flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] px-4">
+    
+    {/* Título Decorativo */}
+    <div class="mb-10 text-center animate-fade-in select-none">
+       <span class="block text-[10px] md:text-xs font-bold text-rose-300 uppercase tracking-[0.2em] mb-2">Espacio Personal</span>
+       <h1 class="font-script text-6xl md:text-7xl text-rose-500 drop-shadow-sm rotate-3 hover:rotate-0 transition-transform duration-500 cursor-default">
+        Bienvenida
+      </h1>
+    </div>
+
+    {/* Login Card (Animado hacia arriba) */}
+    <div class="w-full flex justify-center animate-slide-up relative z-10">
+      <AdminLogin client:only="react" />
+    </div>
+
   </div>
+
+  <style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in { 
+      animation: fade-in 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards; 
+    }
+    
+    .animate-slide-up { 
+      animation: slide-up 1s cubic-bezier(0.19, 1, 0.22, 1) forwards; 
+      animation-delay: 0.1s; 
+      opacity: 0; /* Empieza invisible */
+    }
+  </style>
 </MobileAppLayout>

@@ -3,26 +3,31 @@ const { brands = [] } = Astro.props as {
   brands: { name: string; logo_url: string | null }[];
 };
 
-// Filtramos los que tienen imagen
 const items = brands.filter(b => !!b.logo_url);
 ---
 
 {items.length > 0 ? (
-  <section class="w-full py-4"> {/* Más padding vertical para que no se vea apretado */}
+  <section class="w-full py-6">
     <div class="relative w-full overflow-hidden mask-gradient-soft">
-      <div class="flex items-center gap-12 md:gap-16 animate-marquee whitespace-nowrap px-4">
-        {/* Repetimos 6 veces para asegurar que nunca se corte el loop, incluso en pantallas anchas */}
+      {/* Aumenté el gap a md:gap-20 para dar mucho aire entre logos.
+         La elegancia necesita espacio en blanco.
+      */}
+      <div class="flex items-center gap-12 md:gap-20 animate-marquee whitespace-nowrap px-4">
         {[...items, ...items, ...items, ...items, ...items, ...items].map((logo) => (
-          <div class="flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-110">
+          <div class="flex items-center justify-center shrink-0 group">
             <img
               src={logo.logo_url!}
               alt={logo.name}
-              /* CAMBIOS ESTÉTICOS CLAVE:
-                 - h-12 md:h-16: Logos GRANDES (el doble que antes).
-                 - Quitamos grayscale y opacity: Ahora son full color vibrante.
-                 - drop-shadow-sm: Pequeña sombra para que "floten" sobre el fondo blanco.
+              /* ESTÉTICA MAGAZINE SUPERSTAR:
+                 1. opacity-60 grayscale-[30%]: Se ven cohesivos y elegantes en reposo.
+                 2. hover:opacity-100 hover:grayscale-0: Brillan a todo color al pasar el mouse.
+                 3. hover:scale-110: Un pequeño "pop" al interactuar.
+                 4. mix-blend-multiply: (Opcional, ayuda si los logos tienen fondo blanco no transparente, 
+                    pero lo quité por seguridad si son PNG transparentes).
               */
-              class="h-12 md:h-16 w-auto max-w-[120px] object-contain drop-shadow-sm filter brightness-105 contrast-105"
+              class="h-10 md:h-14 w-auto max-w-[140px] object-contain transition-all duration-500 
+                     opacity-60 grayscale-[30%] brightness-95 
+                     hover:opacity-100 hover:grayscale-0 hover:brightness-105 hover:scale-110 hover:drop-shadow-md"
               loading="lazy"
             />
           </div>
@@ -34,23 +39,22 @@ const items = brands.filter(b => !!b.logo_url);
 
 <style>
   .animate-marquee {
-    /* Velocidad ajustada. 40s es suave y elegante para logos grandes */
-    animation: marquee 40s linear infinite;
+    /* 60s: Movimiento muy lento, casi hipnótico, denota calidad */
+    animation: marquee 60s linear infinite;
     width: max-content;
-    will-change: transform; /* Optimización para que no tironee */
+    will-change: transform;
   }
-  /* Pausar la animación al pasar el mouse para poder ver bien un logo */
+  
   .animate-marquee:hover { animation-play-state: paused; }
 
   @keyframes marquee {
     0% { transform: translateX(0); }
-    /* Al usar tantas repeticiones, movernos al -50% asegura un loop perfecto */
     100% { transform: translateX(-50%); }
   }
 
-  /* Máscara suavizada en los bordes (fade in/out) */
+  /* Máscara suave para que los logos no aparezcan de golpe en los bordes */
   .mask-gradient-soft {
-    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
   }
 </style>

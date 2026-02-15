@@ -1,12 +1,13 @@
 ---
 import "@/styles/globals.css";
+// Importamos el nuevo componente de partículas
+import ParticlesBackground from "@/components/ui/ParticlesBackground";
 
 interface Props {
   title: string;
   description?: string;
-
-  footerAdminHref?: string;  // default: /ingreso-admin
-  footerLinkBioHref?: string; // default: https://vanttacode.cl/linkbio
+  footerAdminHref?: string;
+  footerLinkBioHref?: string;
 }
 
 const {
@@ -27,60 +28,76 @@ const year = new Date().getFullYear();
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playball&display=swap" rel="stylesheet">
   </head>
 
-  <body class="bg-rose-50 text-neutral-800 antialiased selection:bg-rose-200 selection:text-rose-900">
+  <body class="bg-rose-50 text-neutral-800 antialiased selection:bg-rose-200 selection:text-rose-900 overflow-x-hidden min-h-screen">
+    
+    {/* FONDO ANIMADO PROFESIONAL (Solo PC) 
+      Usamos client:only="react" porque esta librería necesita ejecutarse en el navegador.
+    */}
+    <ParticlesBackground client:only="react" />
+    
+    {/* Fondo degradado estático base */}
+    <div class="fixed inset-0 z-[-1] pointer-events-none hidden md:block bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8),rgba(255,241,242,1))]"></div>
+
+
+    {/* CONTENEDOR PRINCIPAL (La "APP")
+       CAMBIO CLAVE: md:max-w-[900px] -> Mucho más ancho en PC.
+    */}
     <main
-      class="mx-auto w-full max-w-md md:max-w-3xl min-h-screen relative flex flex-col bg-white shadow-2xl overflow-hidden border-x border-rose-100/50 transition-all duration-300"
+      class="mx-auto w-full max-w-md md:max-w-[700px] min-h-screen md:min-h-[calc(100vh-4rem)] relative flex flex-col bg-white shadow-2xl shadow-rose-200/50 md:rounded-[3rem] overflow-hidden transition-all duration-300 md:my-8 md:border-[8px] md:border-white ring-1 ring-black/5"
     >
-      <div class="fixed top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(255,182,193,0.15),transparent_60%)] pointer-events-none z-0"></div>
+      
+      {/* Fondo interno de la App (Degradado sutil) */}
+      <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-rose-50/80 to-transparent pointer-events-none z-0"></div>
 
       <div class="relative z-10 flex flex-col flex-1 pb-12">
         <slot />
       </div>
 
-      <footer class="relative z-20 mt-auto py-8 text-center bg-gradient-to-t from-white to-transparent px-4">
-        <div class="flex flex-col items-center gap-1">
-          {/* 1) Arriba del copyright */}
-          <a
-            href={footerAdminHref}
-            class="text-[11px] text-neutral-400 underline hover:text-neutral-700 transition-colors"
-          >
-            Ingreso Admin
-          </a>
-
-          {/* 2) Copyright */}
-          <p class="text-[10px] text-neutral-400 font-medium">
+      <footer class="relative z-20 mt-auto py-8 text-center bg-gradient-to-t from-white via-white to-transparent px-4">
+        <div class="flex flex-col items-center gap-3">
+          
+          {/* Copyright elegante */}
+          <div class="text-[10px] text-neutral-400 font-medium tracking-widest uppercase">
             © {year} Mayra Ibáñez
-          </p>
+          </div>
 
-          {/* 3) Developed */}
-          <a
-            href="https://vanttacode.cl"
-            target="_blank"
-            rel="noreferrer"
-            class="text-[10px] font-bold text-rose-300 hover:text-rose-500 transition-colors flex items-center gap-1 uppercase tracking-widest"
-          >
-            <span>⚡ Developed by VanttaCode</span>
-          </a>
+          <div class="w-8 h-px bg-rose-100"></div>
 
-          {/* 4) Debajo de Developed */}
-          <a
-            href={footerLinkBioHref}
-            target="_blank"
-            rel="noreferrer"
-            class="mt-1 text-[11px] font-bold text-neutral-600 hover:text-rose-500 transition-colors underline"
+          {/* Credits */}
+          <div class="flex flex-col gap-1">
+              <a
+                href="https://vanttacode.cl"
+                target="_blank"
+                rel="noreferrer"
+                class="text-[10px] font-bold text-neutral-300 hover:text-rose-400 transition-colors uppercase tracking-widest"
+              >
+                Developed by VanttaCode
+              </a>
+              
+              <a
+                href={footerLinkBioHref}
+                target="_blank"
+                rel="noreferrer"
+                class="text-[10px] font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-pink-600 hover:scale-105 transition-transform cursor-pointer"
+              >
+                ¿QUIERES TU PROPIO LINKBIO?
+              </a>
+          </div>
+
+           {/* Admin discreto */}
+           <a
+            href={footerAdminHref}
+            class="mt-4 text-[9px] text-neutral-200 hover:text-neutral-400 transition-colors"
           >
-            ¿QUERÉS TU LINK BIO? INGRESA ACÁ.
+            Admin
           </a>
         </div>
       </footer>
     </main>
-
-    <div class="fixed inset-0 pointer-events-none z-[5] overflow-hidden">
-      <div class="absolute top-[15%] left-[5%] text-pink-300/40 animate-pulse text-2xl">✨</div>
-      <div class="absolute top-[40%] right-[8%] text-rose-300/30 animate-float text-xl delay-700">✦</div>
-      <div class="absolute bottom-[20%] left-[10%] text-pink-400/20 animate-pulse text-3xl delay-300">★</div>
-    </div>
   </body>
 </html>

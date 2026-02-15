@@ -15,51 +15,56 @@ export default function StickyHeader({ logoUrl, communityHref, blogHref = "/blog
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const btnBase =
-    "text-[10px] font-bold px-4 py-2 rounded-full uppercase tracking-wide border transition-transform hover:scale-105";
+  // Clases base para los botones (Glossy y redondeados)
+  const btnBase = "text-[10px] font-bold px-4 py-2 rounded-full uppercase tracking-widest border transition-all hover:-translate-y-0.5 active:scale-95";
 
   return (
     <nav
       className={`absolute top-0 left-0 w-full z-50 transition-all duration-500 px-5 py-4 flex items-center justify-between
-        ${scrolled ? "bg-white/90 backdrop-blur-md shadow-sm rounded-b-2xl" : "bg-gradient-to-b from-black/60 to-transparent"}
+        ${scrolled 
+          ? "bg-white/90 backdrop-blur-md shadow-sm rounded-b-[2rem]" 
+          : "bg-gradient-to-b from-black/60 to-transparent"
+        }
       `}
     >
+      {/* --- LOGO --- */}
       <div className="flex items-center">
-        <img
-          src={logoUrl}
-          alt="Logo"
-          className={`h-8 w-auto object-contain transition-all duration-300 
-            ${scrolled ? "brightness-0 saturate-100" : "drop-shadow-md brightness-0 invert"}
-          `}
-          style={
-            scrolled
-              ? { filter: "brightness(0) saturate(100%) invert(38%) sepia(63%) saturate(3047%) hue-rotate(302deg) brightness(97%) contrast(96%)" }
-              : {}
-          }
-        />
+        <a href="/"> {/* Agregué link al home en el logo por usabilidad */}
+            <img
+            src={logoUrl}
+            alt="Logo"
+            className={`h-8 w-auto object-contain transition-all duration-300 
+                ${scrolled ? "" : "drop-shadow-md brightness-0 invert"}
+            `}
+            // Aplicamos el filtro ROSA solo cuando hay scroll
+            style={scrolled ? {
+                filter: "brightness(0) saturate(100%) invert(38%) sepia(63%) saturate(3047%) hue-rotate(302deg) brightness(97%) contrast(96%)"
+            } : {}}
+            />
+        </a>
       </div>
 
+      {/* --- BOTONES --- */}
       <div className="flex items-center gap-2">
+        
+        {/* Botón BLOG */}
         <a
           href={blogHref}
-          className={[
-            btnBase,
+          className={`${btnBase} ${
             scrolled
-              ? "bg-white text-neutral-900 border-rose-200 hover:bg-rose-50"
-              : "bg-white/15 text-white border-white/25 hover:bg-white/25",
-          ].join(" ")}
+              ? "bg-neutral-100 text-neutral-600 border-neutral-200 hover:bg-neutral-200 hover:text-neutral-900"
+              : "bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm"
+          }`}
         >
-          Mini Blog
+          Blog
         </a>
 
+        {/* Botón COMUNIDAD (Destacado) */}
         <a
           href={communityHref}
           target="_blank"
           rel="noreferrer"
-          className={[
-            btnBase,
-            "bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg border-white/20",
-          ].join(" ")}
+          className={`${btnBase} bg-gradient-to-r from-rose-500 to-pink-600 text-white border-transparent shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50`}
         >
           Comunidad
         </a>
