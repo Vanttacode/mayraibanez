@@ -59,8 +59,8 @@ const media = Array.isArray((post as any).media) ? (post as any).media : [];
 
 <MobileAppLayout title={`${post.title} · ${profile.display_name}`} description={post.excerpt}>
   
-  {/* Fondo decorativo fijo */}
-  <div class="fixed inset-0 z-0 bg-gradient-to-b from-rose-50 via-white to-rose-50 pointer-events-none"></div>
+  {/* Fondo Barbie Vibrante */}
+  <div class="fixed inset-0 z-0 bg-gradient-to-b from-pink-200 via-pink-50 to-pink-300 pointer-events-none"></div>
 
   <div class="relative z-10 space-y-6 pt-2 pb-12 px-2">
     
@@ -68,7 +68,7 @@ const media = Array.isArray((post as any).media) ? (post as any).media : [];
     <header class="flex items-center justify-between px-2">
       <a 
         href="/blog" 
-        class="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-white/50 text-rose-500 font-bold text-sm hover:scale-105 transition-all"
+        class="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-white shadow-md border-2 border-pink-200 text-pink-500 font-bold text-sm hover:scale-105 hover:bg-pink-50 transition-all"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         <span>Volver</span>
@@ -76,24 +76,24 @@ const media = Array.isArray((post as any).media) ? (post as any).media : [];
       
       <a 
         href="/"
-        class="bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-white/50 text-xs font-bold text-neutral-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
+        class="bg-white px-4 py-2 rounded-full shadow-md border-2 border-pink-200 text-xs font-bold text-pink-400 uppercase tracking-widest hover:text-pink-600 transition-colors"
       >
         Perfil
       </a>
     </header>
 
-    <article class="relative overflow-hidden rounded-[2.5rem] bg-white p-6 md:p-8 shadow-xl shadow-rose-100/40 border border-rose-50">
+    <article class="relative overflow-hidden rounded-[2.5rem] bg-white p-6 md:p-8 shadow-xl shadow-pink-200/40 border-2 border-pink-100">
       
-      {/* Decoración Top */}
-      <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-rose-300 via-pink-500 to-rose-300"></div>
+      {/* Decoración Top Gradient */}
+      <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-300 via-rose-500 to-pink-300"></div>
 
-      {/* Cover Image con Sombra y Glow */}
+      {/* Cover Image con Marco Rosa */}
       {post.cover_url ? (
-        <div class="relative mb-6 -mx-2 md:mx-0">
-            <div class="absolute inset-0 bg-rose-500/10 blur-xl rounded-full transform scale-90 translate-y-4"></div>
+        <div class="relative mb-8 -mx-2 md:mx-0 group">
+            <div class="absolute inset-0 bg-pink-500/20 blur-xl rounded-[2rem] transform scale-95 translate-y-4 opacity-70 group-hover:opacity-100 transition-opacity"></div>
             <img
             src={post.cover_url}
-            class="relative w-full h-64 md:h-80 object-cover rounded-2xl shadow-md border border-rose-50"
+            class="relative w-full h-64 md:h-80 object-cover rounded-[2rem] shadow-lg border-4 border-pink-50"
             alt=""
             loading="eager"
             decoding="async"
@@ -101,44 +101,47 @@ const media = Array.isArray((post as any).media) ? (post as any).media : [];
         </div>
       ) : null}
 
-      {/* Meta Data */}
+      {/* Fecha (Pill Rosa) */}
       <div class="flex items-center gap-3 mb-4">
-         <span class="px-3 py-1 rounded-full bg-rose-50 text-rose-500 text-[10px] font-bold uppercase tracking-widest border border-rose-100">
+         <span class="px-4 py-1.5 rounded-full bg-pink-50 text-pink-500 text-[10px] font-extrabold uppercase tracking-widest border border-pink-200 shadow-sm">
             {new Date(post.published_at).toLocaleDateString("es-CL", { day: 'numeric', month: 'long', year: 'numeric' })}
          </span>
       </div>
 
-      <h1 class="text-3xl md:text-4xl font-extrabold text-neutral-800 leading-tight mb-4 font-sans tracking-tight">
+      {/* TÍTULO STICKER (Rosa con borde blanco) */}
+      <h1 class="text-3xl md:text-5xl font-extrabold text-pink-600 leading-tight mb-6 font-sans tracking-tight text-shadow-sticker">
         {post.title}
       </h1>
       
-      <p class="text-neutral-500 text-lg leading-relaxed border-l-4 border-rose-200 pl-4 italic mb-8">
-        {post.excerpt}
-      </p>
+      <div class="bg-pink-50/50 rounded-2xl p-4 border-l-4 border-pink-300 mb-8">
+        <p class="text-pink-800/80 text-lg leading-relaxed italic font-medium">
+            {post.excerpt}
+        </p>
+      </div>
 
-      <div class="my-6">
+      <div class="my-8">
         <ShareBar client:visible title={post.title} url={canonical} />
       </div>
 
       {/* Galería de media */}
       {media.length ? (
-        <div class="my-8">
-          <div class="flex items-center gap-2 mb-4">
-             <div class="h-px flex-1 bg-rose-100"></div>
-             <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">Galería</span>
-             <div class="h-px flex-1 bg-rose-100"></div>
+        <div class="my-10">
+          <div class="flex items-center gap-2 mb-6">
+             <div class="h-0.5 flex-1 bg-pink-100 rounded-full"></div>
+             <span class="text-xs font-black text-pink-400 uppercase tracking-widest px-2">Galería de Fotos</span>
+             <div class="h-0.5 flex-1 bg-pink-100 rounded-full"></div>
           </div>
           
-          <div class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide">
+          <div class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-6 scrollbar-hide">
             {media.map((m) => (
-              <div class="min-w-[260px] max-w-[260px] snap-center rounded-2xl border border-rose-100 bg-white shadow-sm overflow-hidden p-1">
+              <div class="min-w-[260px] max-w-[260px] snap-center rounded-3xl border-2 border-pink-100 bg-white shadow-md overflow-hidden p-1.5 hover:rotate-1 transition-transform">
                 {m.type === "video" ? (
                   <video
                     controls
                     playsinline
                     preload="metadata"
                     poster={m.poster_url ?? undefined}
-                    class="w-full h-48 object-cover rounded-xl"
+                    class="w-full h-48 object-cover rounded-2xl"
                   >
                     <source src={m.url} type={m.mime ?? "video/mp4"} />
                   </video>
@@ -148,7 +151,7 @@ const media = Array.isArray((post as any).media) ? (post as any).media : [];
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    class="w-full h-48 object-cover rounded-xl"
+                    class="w-full h-48 object-cover rounded-2xl"
                   />
                 )}
               </div>
@@ -157,29 +160,29 @@ const media = Array.isArray((post as any).media) ? (post as any).media : [];
         </div>
       ) : null}
 
-      <div class="w-full h-px bg-neutral-100 my-8"></div>
+      <div class="w-full h-px bg-pink-100 my-8"></div>
 
-      {/* Contenido HTML Limpio y Elegante */}
+      {/* Contenido HTML (Tipografía adaptada) */}
       <div class="prose prose-lg max-w-none 
-          prose-headings:font-bold prose-headings:text-rose-500 prose-headings:font-sans
-          prose-p:text-neutral-600 prose-p:leading-relaxed
-          prose-a:text-pink-600 prose-a:font-bold prose-a:no-underline hover:prose-a:underline
-          prose-strong:text-neutral-800
-          prose-img:rounded-2xl prose-img:shadow-md
-          prose-blockquote:border-l-rose-300 prose-blockquote:bg-rose-50/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-neutral-600
-          prose-li:text-neutral-600">
+          prose-headings:font-bold prose-headings:text-pink-500 prose-headings:font-sans
+          prose-p:text-neutral-600 prose-p:leading-relaxed prose-p:font-medium
+          prose-a:text-pink-600 prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-pink-700
+          prose-strong:text-pink-700
+          prose-img:rounded-3xl prose-img:shadow-lg prose-img:border-4 prose-img:border-pink-50
+          prose-blockquote:border-l-pink-400 prose-blockquote:bg-pink-50 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:text-pink-700
+          prose-li:text-neutral-600 prose-li:marker:text-pink-300">
         <Fragment set:html={safeHtml} />
       </div>
 
     </article>
 
-    {/* Footer */}
+    {/* Footer Barbie */}
     <footer class="pt-8 px-2">
-      <div class="rounded-[2.5rem] border border-rose-100 bg-white/60 backdrop-blur-xl p-8 text-center shadow-lg shadow-rose-50">
+      <div class="rounded-[3rem] border-2 border-pink-200 bg-white/80 backdrop-blur-xl p-8 text-center shadow-xl shadow-pink-100/60">
         
-        <div class="text-xs font-semibold text-neutral-400 mb-6 uppercase tracking-widest">
-          Diseñado por{" "}
-          <a class="text-rose-500 hover:text-rose-700 transition" href="https://vanttacode.cl" target="_blank" rel="noreferrer">
+        <div class="text-xs font-bold text-pink-400 mb-6 uppercase tracking-widest">
+          Diseñado con 💖 por{" "}
+          <a class="text-pink-600 font-extrabold hover:text-pink-700 transition hover:underline" href="https://vanttacode.cl" target="_blank" rel="noreferrer">
             VanttaCode
           </a>
         </div>
@@ -188,16 +191,30 @@ const media = Array.isArray((post as any).media) ? (post as any).media : [];
           href="https://vanttacode.cl/linkbio"
           target="_blank"
           rel="noreferrer"
-          class="relative group w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold text-sm tracking-wide shadow-xl shadow-pink-500/30 overflow-hidden transition-transform hover:scale-[1.02]"
+          class="relative group w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-extrabold text-sm tracking-wide shadow-xl shadow-pink-500/40 overflow-hidden transition-transform hover:scale-[1.02] border-2 border-white"
         >
-          <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-full"></div>
-          <span class="relative z-10">✨ ¿QUIERES TU PROPIO LINKBIO?</span>
+          <div class="absolute inset-0 bg-white/30 translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-full"></div>
+          <span class="relative z-10 flex items-center gap-2">
+            ✨ ¡QUIERO MI PROPIO LINKBIO!
+          </span>
         </a>
 
-        <a href="/ingreso-admin" class="mt-6 block text-[10px] text-neutral-300 font-bold hover:text-rose-400 transition uppercase tracking-widest">
+        <a href="/ingreso-admin" class="mt-6 block text-[10px] text-pink-400 font-bold hover:text-pink-600 transition uppercase tracking-widest">
           Acceso Administrador
         </a>
       </div>
     </footer>
   </div>
 </MobileAppLayout>
+
+<style>
+  /* Efecto Sticker para el Título H1 */
+  .text-shadow-sticker {
+    text-shadow: 
+      2px 2px 0px #ffffff,
+      -1px -1px 0 #ffffff,  
+      1px -1px 0 #ffffff,
+      -1px 1px 0 #ffffff,
+      1px 1px 0 #ffffff;
+  }
+</style>
