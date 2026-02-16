@@ -7,40 +7,39 @@ const items = brands.filter(b => !!b.logo_url);
 ---
 
 {items.length > 0 ? (
-  <section class="w-full py-6">
-    <div class="relative w-full overflow-hidden mask-gradient-soft">
-      {/* Aumenté el gap a md:gap-20 para dar mucho aire entre logos.
-         La elegancia necesita espacio en blanco.
-      */}
-      <div class="flex items-center gap-12 md:gap-20 animate-marquee whitespace-nowrap px-4">
+  <section class="w-full">
+    {/* Contenedor estilo "Barbie Box": Borde rosa, fondo sutil, esquinas redondeadas */}
+    <div class="relative w-full overflow-hidden mask-gradient-soft bg-pink-50/30 border-2 border-pink-100 rounded-[2.5rem] py-8 shadow-inner">
+      
+      {/* Carrusel Infinito */}
+      <div class="flex items-center gap-12 md:gap-24 animate-marquee whitespace-nowrap px-4">
+        {/* Repetimos los items varias veces para el loop perfecto */}
         {[...items, ...items, ...items, ...items, ...items, ...items].map((logo) => (
-          <div class="flex items-center justify-center shrink-0 group">
+          <div class="flex items-center justify-center shrink-0 group transform transition-transform">
             <img
               src={logo.logo_url!}
               alt={logo.name}
-              /* ESTÉTICA MAGAZINE SUPERSTAR:
-                 1. opacity-60 grayscale-[30%]: Se ven cohesivos y elegantes en reposo.
-                 2. hover:opacity-100 hover:grayscale-0: Brillan a todo color al pasar el mouse.
-                 3. hover:scale-110: Un pequeño "pop" al interactuar.
-                 4. mix-blend-multiply: (Opcional, ayuda si los logos tienen fondo blanco no transparente, 
-                    pero lo quité por seguridad si son PNG transparentes).
+              /* ESTÉTICA BARBIE:
+                 1. opacity-60 saturate-50: Suaves y no invasivos en reposo.
+                 2. hover:POP: Color total, crecen y sueltan sombra rosa.
               */
-              class="h-10 md:h-14 w-auto max-w-[140px] object-contain transition-all duration-500 
-                     opacity-60 grayscale-[30%] brightness-95 
-                     hover:opacity-100 hover:grayscale-0 hover:brightness-105 hover:scale-110 hover:drop-shadow-md"
+              class="h-10 md:h-14 w-auto max-w-[140px] object-contain transition-all duration-300 
+                     opacity-60 saturate-50 brightness-105 
+                     hover:opacity-100 hover:saturate-100 hover:scale-110 hover:drop-shadow-[0_4px_6px_rgba(236,72,153,0.3)] cursor-pointer"
               loading="lazy"
             />
           </div>
         ))}
       </div>
+
     </div>
   </section>
 ) : null}
 
 <style>
   .animate-marquee {
-    /* 60s: Movimiento muy lento, casi hipnótico, denota calidad */
-    animation: marquee 60s linear infinite;
+    /* 40s: Un ritmo alegre pero elegante */
+    animation: marquee 40s linear infinite;
     width: max-content;
     will-change: transform;
   }
@@ -52,9 +51,9 @@ const items = brands.filter(b => !!b.logo_url);
     100% { transform: translateX(-50%); }
   }
 
-  /* Máscara suave para que los logos no aparezcan de golpe en los bordes */
+  /* Máscara suave para difuminar los bordes */
   .mask-gradient-soft {
-    mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
   }
 </style>

@@ -1,37 +1,99 @@
-/* 1. LA FUENTE DEBE SER LA LÍNEA 1 OBLIGATORIAMENTE */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Playball&display=swap');
+/* 1. FUENTES */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;800;900&family=Playball&display=swap');
 
-/* 2. LUEGO TAILWIND */
+/* 2. TAILWIND */
 @import "tailwindcss";
 
-/* 3. LUEGO TUS CONFIGURACIONES */
+/* 3. CONFIGURACIÓN BARBIE CORE */
 @theme {
-  --color-brand-pink: #ec4899;
-  --color-brand-hot: #be185d;
-  --color-brand-light: #fff1f2;
+  /* Paleta Barbie Extendida */
+  --color-brand-pink: #ec4899;      /* Rosa Chicle */
+  --color-brand-hot: #be185d;       /* Fucsia Intenso */
+  --color-brand-light: #fff1f2;     /* Rosa Nube */
+  --color-brand-pastel: #fdf2f8;    /* Rosa Bebé */
   
+  /* Tipografías */
   --font-sans: "Montserrat", sans-serif;
   --font-script: "Playball", cursive;
+
+  /* Animaciones Personalizadas */
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-heart-click: heartbeat 0.8s ease-in-out;
+  --animate-shine: shine 2.5s infinite linear;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-fade-in: fadeIn 0.8s ease-out forwards;
 }
 
-/* 4. FINALMENTE TUS ANIMACIONES */
+/* 4. KEYFRAMES (Las instrucciones de movimiento) */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes heartbeat {
   0% { transform: scale(1); }
-  15% { transform: scale(1.15); }
+  15% { transform: scale(1.25); }
   30% { transform: scale(1); }
   45% { transform: scale(1.15); }
   60% { transform: scale(1); }
 }
 
-.animate-float {
-  animation: float 4s ease-in-out infinite;
+@keyframes shine {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  50%, 100% { transform: translateX(200%) skewX(-15deg); }
 }
 
-.animate-heart-click {
-  animation: heartbeat 0.8s ease-in-out;
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 5. UTILIDADES GLOBALES Y ESTÉTICA */
+
+/* Scrollbar Personalizado (Rosa, obvio) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #fff1f2;
+}
+::-webkit-scrollbar-thumb {
+  background: #f472b6;
+  border-radius: 99px;
+  border: 2px solid #fff1f2;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ec4899;
+}
+
+/* Clase para ocultar scrollbar en carruseles (pero mantener funcionalidad) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Efecto Sticker (Borde blanco alrededor del texto) */
+/* Úsalo así: <h1 class="text-sticker text-pink-500">Hola</h1> */
+.text-sticker {
+  text-shadow: 
+    2px 2px 0 #fff,
+    -1px -1px 0 #fff,  
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff,
+    3px 3px 5px rgba(236, 72, 153, 0.3); /* Sombra suave rosa */
+}
+
+/* Ajustes base para asegurar que todo se vea bien */
+body {
+  background-color: #fff1f2; /* Fondo base rosa muy suave */
+  overflow-x: hidden; /* Evita scroll horizontal indeseado */
 }

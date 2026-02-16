@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import type { Profile } from "@/lib/types";
-import { Sparkles, Send, Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react";
+import { Sparkles, Send, Loader2, CheckCircle2, AlertCircle, Mail, Crown } from "lucide-react";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -100,45 +100,47 @@ export default function HireCard({ profile }: { profile: Profile }) {
     });
   };
 
-  // Clases compartidas para los inputs (Estilo Clean)
-  const inputClass = "w-full px-4 py-3 text-sm bg-neutral-50 border border-rose-100 rounded-xl focus:outline-none focus:bg-white focus:ring-2 focus:ring-rose-200 focus:border-rose-300 transition-all placeholder:text-neutral-400 text-neutral-700";
+  // Clases compartidas para los inputs (Estilo Barbie Clean)
+  const inputClass = "w-full px-4 py-3 text-sm bg-white border-2 border-pink-100 rounded-xl focus:outline-none focus:bg-pink-50/30 focus:border-pink-300 focus:shadow-md transition-all placeholder:text-pink-300 text-pink-600 font-medium";
 
   return (
-    <section className="relative overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-rose-100/50 border border-rose-50 text-center group">
+    <section className="relative overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl shadow-pink-200/50 border-2 border-pink-100 text-center group">
       
-      {/* Decoración Superior */}
-      <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-rose-300 via-pink-500 to-rose-300"></div>
+      {/* Decoración Superior Gradient */}
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-300 via-rose-500 to-pink-300"></div>
       
-      {/* Decoración de fondo (Glow) */}
-      <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-gradient-to-tl from-rose-50 to-transparent blur-3xl opacity-60 pointer-events-none"></div>
+      {/* Decoración de fondo (Glow Barbie) */}
+      <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-gradient-to-tl from-pink-100 to-transparent blur-3xl opacity-60 pointer-events-none"></div>
 
       <div className="relative z-10 flex flex-col items-center">
         
         {/* Icono de Estado */}
-        <div className={`mb-4 rounded-full p-4 shadow-sm transition-all duration-500 ${status === "success" ? "bg-green-50 text-green-500" : "bg-rose-50 text-rose-500"}`}>
-          {status === "success" ? <CheckCircle2 size={28} /> : <Sparkles size={28} />}
+        <div className={`mb-4 rounded-full p-4 shadow-sm border-2 transition-all duration-500 ${status === "success" ? "bg-green-50 text-green-500 border-green-100" : "bg-pink-50 text-pink-500 border-pink-100"}`}>
+          {status === "success" ? <CheckCircle2 size={32} /> : <Crown size={32} />}
         </div>
 
-        <h3 className="text-2xl font-bold text-neutral-800 tracking-tight mb-2 font-sans">
+        {/* Título Sticker */}
+        <h3 className="text-3xl font-extrabold text-pink-500 tracking-tight mb-2 font-script" 
+            style={{ textShadow: "2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff" }}>
           {status === "success" ? "¡Mensaje Enviado!" : "Trabajemos Juntos"}
         </h3>
 
         {status === "success" ? (
-          <div className="mt-4 text-neutral-500 text-sm animate-fade-in px-4">
-            <p className="font-bold text-rose-500 mb-2 text-lg">Gracias por escribir</p>
-            <p className="leading-relaxed">He recibido tu propuesta correctamente.<br/>Te responderé al correo a la brevedad.</p>
+          <div className="mt-4 text-pink-500 text-sm animate-fade-in px-4">
+            <p className="font-extrabold text-pink-600 mb-2 text-lg">¡Gracias por escribir! 💕</p>
+            <p className="leading-relaxed font-medium">Tu propuesta llegó a mi bandeja de entrada.<br/>Te responderé lo antes posible.</p>
             
             <button
               onClick={() => setStatus("idle")}
-              className="mt-8 px-6 py-2 rounded-full border border-rose-200 text-rose-500 font-bold text-xs hover:bg-rose-50 hover:border-rose-300 transition-colors uppercase tracking-widest"
+              className="mt-8 px-6 py-2 rounded-full border-2 border-pink-200 text-pink-500 font-bold text-xs hover:bg-pink-50 hover:border-pink-300 transition-colors uppercase tracking-widest"
             >
               Enviar otra propuesta
             </button>
           </div>
         ) : (
           <>
-            <p className="text-sm text-neutral-500 leading-relaxed font-medium mb-8 max-w-[300px]">
-              ¿Tienes una marca o evento? Completa los datos y creemos algo increíble.
+            <p className="text-sm text-pink-400 leading-relaxed font-bold mb-8 max-w-[300px]">
+              ¿Tienes una marca o evento? ✨<br/>Completa los datos y hagamos magia.
             </p>
 
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4 text-left">
@@ -196,9 +198,9 @@ export default function HireCard({ profile }: { profile: Profile }) {
                     <option value="Evento">Evento</option>
                     <option value="Colaboración">Colaboración</option>
                     </select>
-                    {/* Flecha custom para el select */}
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-rose-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    {/* Flecha custom rosa */}
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-pink-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </div>
                 </div>
               </div>
@@ -223,13 +225,13 @@ export default function HireCard({ profile }: { profile: Profile }) {
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="group/btn relative w-full mt-2 flex items-center justify-center gap-3 bg-neutral-900 text-white py-4 rounded-xl text-sm font-bold hover:bg-rose-500 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-neutral-300 hover:shadow-rose-200"
+                className="group/btn relative w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white py-4 rounded-xl text-sm font-extrabold tracking-wide hover:shadow-lg hover:shadow-pink-300/50 hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-md border-2 border-white"
               >
                 {status === "loading" ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : (
                   <>
-                    <span className="relative z-10">Enviar Propuesta</span>
+                    <span className="relative z-10">ENVIAR PROPUESTA</span>
                     <Send size={16} className="relative z-10 group-hover/btn:translate-x-1 transition-transform" />
                   </>
                 )}
