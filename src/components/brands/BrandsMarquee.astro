@@ -1,59 +1,209 @@
 ---
-const { brands = [] } = Astro.props as {
-  brands: { name: string; logo_url: string | null }[];
+type BrandItem = {
+  name: string;
+  logo_url: string;
+  href?: string | null;
 };
 
-const items = brands.filter(b => !!b.logo_url);
+/**
+ * Componente AUTÓNOMO:
+ * - No recibe props
+ * - No mezcla logos desde index
+ * - Usa solo esta lista interna
+ *
+ * Si querés agregar/quitar marcas, editá SOLO este array.
+ */
+const items: BrandItem[] = [
+  { name: "Incidencia",        logo_url: "/logos/1.webp",  href: null },
+  ///{ name: "Odontoclinik",      logo_url: "/logos/2.webp",  href: null },
+  ///{ name: "Palermo Teatro Bar",logo_url: "/logos/3.webp",  href: null },
+ /// { name: "Marca 4",           logo_url: "/logos/4.webp",  href: null },
+
+  { name: "MLADINC",           logo_url: "/logos/5.webp",  href: null },
+  { name: "Tiendas One",       logo_url: "/logos/6.webp",  href: null },
+  ///{ name: "Zonaustral",        logo_url: "/logos/7.webp",  href: null },
+  { name: "ROFIL",             logo_url: "/logos/8.webp",  href: null },
+
+  { name: "Pepsi",             logo_url: "/logos/9.webp",  href: null },
+  { name: "Coco Store",        logo_url: "/logos/11.webp", href: null },
+  { name: "Santo Tomas",       logo_url: "/logos/12.webp", href: null },
+
+  /**
+   * En tu captura aparece como "Archivo JPG".
+   * Si no carga con .jpg, probá .jpeg (o viceversa).
+   */
+  { name: "Agua Nozomu",       logo_url: "/logos/13.jpg",  href: null },
+];
 ---
 
 {items.length > 0 ? (
   <section class="w-full">
-    {/* Contenedor estilo "Barbie Box": Borde rosa, fondo sutil, esquinas redondeadas */}
-    <div class="relative w-full overflow-hidden mask-gradient-soft bg-pink-50/30 border-2 border-pink-100 rounded-[2.5rem] py-8 shadow-inner">
-      
-      {/* Carrusel Infinito */}
-      <div class="flex items-center gap-12 md:gap-24 animate-marquee whitespace-nowrap px-4">
-        {/* Repetimos los items varias veces para el loop perfecto */}
-        {[...items, ...items, ...items, ...items, ...items, ...items].map((logo) => (
-          <div class="flex items-center justify-center shrink-0 group transform transition-transform">
-            <img
-              src={logo.logo_url!}
-              alt={logo.name}
-              /* ESTÉTICA BARBIE:
-                 1. opacity-60 saturate-50: Suaves y no invasivos en reposo.
-                 2. hover:POP: Color total, crecen y sueltan sombra rosa.
-              */
-              class="h-10 md:h-14 w-auto max-w-[140px] object-contain transition-all duration-300 
-                     opacity-60 saturate-50 brightness-105 
-                     hover:opacity-100 hover:saturate-100 hover:scale-110 hover:drop-shadow-[0_4px_6px_rgba(236,72,153,0.3)] cursor-pointer"
-              loading="lazy"
-            />
-          </div>
-        ))}
-      </div>
+    <div class="w-full bg-pink-50/30 border-2 border-pink-100 rounded-[2.5rem] p-4 md:p-6 shadow-inner">
+      {/* Grilla fija */}
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-5">
+        {items.map((logo) => {
+          const isLinked = !!logo.href;
 
+          return (
+            <div class="brand-card" title={logo.name} aria-label={logo.name}>
+              {isLinked ? (
+                <a
+                  href={logo.href!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Ir a ${logo.name}`}
+                  title={logo.name}
+                  class="brand-card__link"
+                >
+                  <img
+                    src={logo.logo_url}
+                    alt={logo.name}
+                    loading="lazy"
+                    class="brand-card__img"
+                  />
+                </a>
+              ) : (
+                <div class="brand-card__link" aria-label={logo.name}>
+                  <img
+                    src={logo.logo_url}
+                    alt={logo.name}
+                    loading="lazy"
+                    class="brand-card__img"
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   </section>
 ) : null}
 
 <style>
-  .animate-marquee {
-    /* 40s: Un ritmo alegre pero elegante */
-    animation: marquee 40s linear infinite;
-    width: max-content;
+  .brand-card {
+    position: relative;
+    height: 92px;
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(244, 114, 182, 0.18);
+    box-shadow: 0 1px 2px rgba(236, 72, 153, 0.06);
+    overflow: hidden;
+    transition:
+      transform 220ms ease,
+      box-shadow 220ms ease,
+      border-color 220ms ease;
+  }
+
+  @media (min-width: 768px) {
+    .brand-card {
+      height: 112px;
+      border-radius: 1.4rem;
+    }
+  }
+
+  .brand-card__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+  }
+
+  /* Logo sin "blanqueado" */
+  .brand-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 1;
+    filter: none;
+    padding: 10px;
+    transition:
+      transform 260ms ease,
+      filter 260ms ease;
     will-change: transform;
   }
-  
-  .animate-marquee:hover { animation-play-state: paused; }
 
-  @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+  @media (min-width: 768px) {
+    .brand-card__img {
+      padding: 12px;
+    }
   }
 
-  /* Máscara suave para difuminar los bordes */
-  .mask-gradient-soft {
-    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  /* Subrayado rosado */
+  .brand-card::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      rgba(244, 114, 182, 0.10),
+      rgba(236, 72, 153, 0.95),
+      rgba(244, 114, 182, 0.10)
+    );
+    box-shadow: 0 3px 10px rgba(236, 72, 153, 0.20);
+    transform: scaleX(0.12);
+    transform-origin: center;
+    opacity: 0;
+    transition:
+      transform 240ms ease,
+      opacity 240ms ease;
+    pointer-events: none;
+  }
+
+  /* Animaciones sutiles */
+  @keyframes brand-card-float {
+    0%, 100% { transform: translateY(-2px); }
+    50% { transform: translateY(-5px); }
+  }
+
+  @keyframes brand-logo-tilt {
+    0%, 100% { transform: translateY(-1px) scale(1.02) rotate(0deg); }
+    50% { transform: translateY(-2px) scale(1.04) rotate(-0.4deg); }
+  }
+
+  @keyframes brand-underline-pulse {
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    50% { opacity: 0.92; filter: brightness(1.10); }
+  }
+
+  /* Hover en todas las tarjetas */
+  .brand-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(236, 72, 153, 0.30);
+    box-shadow:
+      0 10px 18px rgba(236, 72, 153, 0.14),
+      0 2px 4px rgba(236, 72, 153, 0.08);
+    animation: brand-card-float 1.6s ease-in-out infinite;
+  }
+
+  .brand-card:hover::after {
+    opacity: 1;
+    transform: scaleX(1);
+    animation: brand-underline-pulse 1.3s ease-in-out infinite;
+  }
+
+  .brand-card:hover .brand-card__img {
+    filter: drop-shadow(0 6px 10px rgba(236, 72, 153, 0.14));
+    animation: brand-logo-tilt 1.6s ease-in-out infinite;
+  }
+
+  /* Accesibilidad teclado */
+  .brand-card:focus-within {
+    transform: translateY(-3px);
+    border-color: rgba(236, 72, 153, 0.32);
+    box-shadow:
+      0 8px 18px rgba(236, 72, 153, 0.16),
+      0 0 0 3px rgba(236, 72, 153, 0.12);
+  }
+
+  .brand-card:focus-within::after {
+    opacity: 1;
+    transform: scaleX(1);
   }
 </style>
