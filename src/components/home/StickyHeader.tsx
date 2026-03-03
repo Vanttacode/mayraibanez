@@ -59,7 +59,7 @@ export default function StickyHeader({ logoUrl, communityHref, blogHref = "/blog
               : "bg-white text-pink-600 border-white shadow-lg hover:bg-pink-50 hover:scale-105"
           }`}
         >
-          Blog
+          Noticias
         </a>
 
         {/* Botón COMUNIDAD */}
